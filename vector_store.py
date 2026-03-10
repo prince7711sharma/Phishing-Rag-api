@@ -3,20 +3,41 @@ import faiss
 import numpy as np
 from knowledge_base import documents
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+# -----------------------------
+# Lazy loading model
+# -----------------------------
 
-# convert text → embeddings
-embeddings = model.encode(documents)
+model = None
+index = None
 
-# create FAISS index
-dimension = embeddings.shape[1]
 
-index = faiss.IndexFlatL2(dimension)
+def load_vector_store():
+    global model, index
 
-index.add(np.array(embeddings))
+    if model is None:
 
+        print("Loading embedding model...")
+
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+
+        embeddings = model.encode(documents)
+
+        dimension = embeddings.shape[1]
+
+        index = faiss.IndexFlatL2(dimension)
+
+        index.add(np.array(embeddings))
+
+        print("Vector store ready")
+
+
+# -----------------------------
+# Search similar URLs
+# -----------------------------
 
 def search_similar(query, k=3):
+
+    load_vector_store()
 
     query_embedding = model.encode([query])
 
