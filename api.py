@@ -1,33 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-
 from rag_detector import detect_url
 
-app = FastAPI(
-    title="Phishing URL Detection API",
-    version="1.0"
-)
-
-# -------------------------
-# CORS CONFIGURATION
-# -------------------------
-
-origins = [
-    "*"
-]
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# -------------------------
-# REQUEST MODEL
-# -------------------------
 
 class URLRequest(BaseModel):
     url: str
@@ -39,7 +23,7 @@ def home():
 
 
 @app.post("/detect")
-def detect_phishing(data: URLRequest):
+def detect(data: URLRequest):
 
     result = detect_url(data.url)
 
