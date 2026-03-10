@@ -1,32 +1,29 @@
 from groq import Groq
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-
 
 def detect_phishing(url):
 
     prompt = f"""
 You are a cybersecurity expert.
 
-Analyze this URL and determine if it is phishing.
+Analyze this URL:
 
-URL: {url}
+{url}
 
-Consider:
-- suspicious keywords (login, verify, update, secure)
-- impersonation of brands
-- unusual domain patterns
-- excessive hyphens or numbers
+Determine if it is phishing.
 
-Return only one word:
+Return ONLY valid JSON in this format:
 
-SAFE
-or
-PHISHING
+{{
+"prediction": "SAFE or PHISHING",
+"reason": "short explanation"
+}}
 """
 
     response = client.chat.completions.create(
@@ -34,4 +31,6 @@ PHISHING
         messages=[{"role": "user", "content": prompt}]
     )
 
-    return response.choices[0].message.content.strip()
+    text = response.choices[0].message.content.strip()
+
+    return json.loads(text)

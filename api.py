@@ -13,14 +13,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 class URLRequest(BaseModel):
     url: str
-
-
-@app.get("/")
-def home():
-    return {"message": "GenAI Phishing Detector Running"}
 
 
 @app.post("/detect")
@@ -30,5 +24,6 @@ def detect(data: URLRequest):
 
     return {
         "url": data.url,
-        "prediction": result
+        "prediction": result["prediction"],
+        "reason": result["reason"]
     }
