@@ -1,44 +1,37 @@
-import os
 from groq import Groq
+import os
 from dotenv import load_dotenv
 
-# load environment variables
 load_dotenv()
 
-# get api key
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-# initialize groq client
-client = Groq(api_key=GROQ_API_KEY)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
-def analyze_url(url, context):
+def detect_phishing(url):
 
     prompt = f"""
 You are a cybersecurity expert.
 
-Analyze this URL and determine if it is phishing or safe.
+Analyze this URL and determine if it is phishing.
 
 URL: {url}
 
-Similar known examples:
-{context}
+Consider:
+- suspicious keywords (login, verify, update, secure)
+- impersonation of brands
+- unusual domain patterns
+- excessive hyphens or numbers
 
-If the URL imitates brands or contains suspicious
-keywords like login, verify, update or bank,
-classify it as PHISHING.
+Return only one word:
 
-Otherwise classify it as SAFE.
-
-Return only:
-SAFE or PHISHING
+SAFE
+or
+PHISHING
 """
 
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
+        messages=[{"role": "user", "content": prompt}]
     )
 
     return response.choices[0].message.content.strip()
