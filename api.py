@@ -24,20 +24,8 @@ def home():
 
 @app.post("/detect")
 def detect(data: URLRequest):
-
     result = detect_url(data.url)
-
     return {
         "url": data.url,
         "prediction": result
     }
-
-
-# This is required for Render
-if __name__ == "__main__":
-    import uvicorn
-    import os
-
-    port = int(os.environ.get("PORT", 10000))
-
-    uvicorn.run(app, host="0.0.0.0", port=port)
